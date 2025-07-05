@@ -29,25 +29,65 @@ def playerHeatMap(data,playerSelect):
 
 
 def shotMap(shotData,playerSelect):
-    shots=shotData[shotData['player']==playerSelect]
-    goals=shots[shots['result']=='Goal']
-    missed=shots[shots['result']!='Goal']
-    xgGoal=goals['xG']*100
-    xgMiss=missed['xG']*100
+    shots=shotData[(shotData['player']==playerSelect) & (shotData['is_shot']=='1')]
+    goals=shots[shots['is_goal']=='1']
+    missed=shots[shots['is_goal']!='1']
     totalGoals=goals.shape[0]
-    totalMiss=missed.shape[0]
-    pitch=VerticalPitch(half=True,pitch_type='metricasports',pitch_color='grass',line_color='black',pitch_length=100,pitch_width=50)
-    fig,ax=pitch.draw()
+    totalShots=shots.shape[0]
+    converionRate=(totalGoals/totalShots)*100
+    pitch=VerticalPitch(half=True,pitch_type='opta',pitch_color='grass',line_color='black')
+    fig,ax=pitch.draw(figsize=(5,10))
     
-    pitch.scatter(goals['X'],goals['Y'],s=xgGoal,ax=ax,color='red',edgecolors='black',label='goal')
-    pitch.scatter(missed['X'],missed['Y'],s=xgMiss,ax=ax,color='blue',edgecolors='blue',label='miss',alpha=0.2)
+    pitch.scatter(goals['x'],goals['y'],ax=ax,color='red',edgecolors='black',label='goal')
+    pitch.scatter(missed['x'],missed['y'],ax=ax,color='blue',edgecolors='blue',label='miss',alpha=0.2)
     
     ax.legend(loc='upper right')
     st.pyplot(fig)
+    
+    st.markdown(f"### Goal Conversion Rate")
+    st.markdown(f"- Total Shots: **{totalShots}**")
+    st.markdown(f"- Goals: **{totalGoals}**")
+    st.markdown(f"- Conversion Rate: **{converionRate:.2f}%**")
+    
+    
+def passNetwork(passData,playerSelect):
+    passes=passData[(passData['type']=='Pass') & (passData['player']==playerSelect)]
+    successPass=passes[passes['outcome_type']=='Successful']
+    unsuccessPass=passes[passes['outcome_type']=='Unsuccessful']
+    totalPass=passes.shape[0]
+    completePass=successPass.shape[0]
+    passingAccuracy=(completePass/totalPass)*100
+    
+    pitch=Pitch(pitch_type='opta',pitch_color='grass',line_color='black')
+    fig,ax=pitch.draw()
+    
+    pitch1=Pitch(pitch_type='opta',pitch_color='grass',line_color='black')
+    fig1,ax1=pitch1.draw()
+    
+    #success pass
+    pitch.scatter(successPass['x'],successPass['y'],color='red',edgecolors='black',label='Successful pass',ax=ax, s=10)
+    pitch.lines(successPass['x'],successPass['y'],successPass['end_x'],successPass['end_y'],ax=ax,color='red',lw=0.5)
+    
+    #unsuccess pass
+    pitch.scatter(unsuccessPass['x'],unsuccessPass['y'],color='blue',edgecolors='blue',label='Unsuccessful pass',ax=ax1, s=10,alpha=0.2)
+    pitch.lines(unsuccessPass['x'],unsuccessPass['y'],unsuccessPass['end_x'],unsuccessPass['end_y'],ax=ax1,color='blue',lw=0.5)
+    
+    ax.legend(loc='upper right')
+    st.pyplot(fig)
+    
+    ax1.legend(loc='upper right')
+    st.pyplot(fig1)
+    st.markdown(f"### Passing Accuracy")
+    st.markdown(f"- Total Passes: **{totalPass}**")
+    st.markdown(f"- Successful Passes: **{completePass}**")
+    st.markdown(f"- Accuracy: **{passingAccuracy:.2f}%**")
+
+
 
 teamsDF=pd.read_csv('data/PL_teams.csv')
 data=pd.read_parquet('data\ENG_match_events.parquet')
-shotData=pd.read_csv('data\epl_team_season_shots.csv')
+# Incomplete Data
+# shotData=pd.read_csv('data\epl_team_season_shots.csv')
 
 
 with st.sidebar:
@@ -81,7 +121,9 @@ if analyse:
         st.image(imgURL,width=250)
     else:
         st.write("😔 Can't display the fifa card becuase the free api can handle only 100 requests/day")
-    st.title(f"{playerSelect} HeatMap 🔥")
+    st.title(f"{playerSelect}'s HeatMap")
     playerHeatMap(data,playerSelect)
-    st.title(f"{playerSelect} Shots with xG")
-    shotMap(shotData,playerSelect)
+    st.title(f"{playerSelect}'s Shots")
+    shotMap(data,playerSelect)
+    st.title(f"{playerSelect}'s Pass Network")
+    passNetwork(data,playerSelect)
