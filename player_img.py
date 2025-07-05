@@ -7,7 +7,7 @@ load_dotenv()
 GOOGLE_API_KEY=os.getenv("GOOGLE_CUSTOM_SEARCH_API_KEY")
 GOOGLE_CX=os.getenv("GOOGLE_CX_API_KEY")
 
-def getPlayerImage(playerName,teamName):
+def getPlayerImage(playerName):
     query=f"{playerName} site:ea.com/games/ea-sports-fc/ratings"
     url=f"https://www.googleapis.com/customsearch/v1"
     param={
@@ -25,4 +25,3 @@ def getPlayerImage(playerName,teamName):
     
     except Exception as e:
         return e
-    

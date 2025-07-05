@@ -45,12 +45,11 @@ with st.sidebar:
     st.image(logo_path)
     analyse=st.button("Analysis")
 
-playerInfo=playersDF[playersDF['Player']==playerSelect].iloc[0]
+
 
 st.title('Player Analysis 24/25 Season')
 
 imgURL=getPlayerImage(playerSelect)
-info=getPlayerInfo(playerSelect,teamSelect)
 
 if analyse:
     st.title(playerSelect)
@@ -58,7 +57,5 @@ if analyse:
         st.image(imgURL,width=250)
     else:
         st.write("😔 Can't display the fifa card becuase the free api can handle only 100 requests/day")
-    if info:
-        st.write(info)
     st.title(f"{playerSelect} Heat Map")
     playerHeatMap(data,playerSelect)
