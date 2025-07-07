@@ -127,14 +127,14 @@ with st.sidebar:
 
 st.title('Player Analysis 24/25 Season')
 
-# imgURL=getPlayerImage(playerSelect)
+imgURL=getPlayerImage(playerSelect)
 
 if analyse:
     st.title(playerSelect)
-    # if imgURL:
-    #     st.image(imgURL,width=250)
-    # else:
-    #     st.write("😔 Can't display the fifa card becuase the free api can handle only 100 requests/day")
+    if imgURL:
+        st.image(imgURL,width=250)
+    else:
+        st.write("😔 Can't display the fifa card becuase the free api can handle only 100 requests/day")
     st.title(f"{playerSelect}'s HeatMap")
     if analyseType=='Season':
         playerHeatMap(data,playerSelect)
