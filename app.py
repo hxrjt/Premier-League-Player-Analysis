@@ -34,20 +34,24 @@ def shotMap(shotData,playerSelect):
     missed=shots[shots['is_goal']!='1']
     totalGoals=goals.shape[0]
     totalShots=shots.shape[0]
-    converionRate=(totalGoals/totalShots)*100
-    pitch=VerticalPitch(half=True,pitch_type='opta',pitch_color='grass',line_color='black')
-    fig,ax=pitch.draw(figsize=(5,10))
+    conversionRate=0
+    if totalShots:
+        conversionRate=(totalGoals/totalShots)*100
+        pitch=VerticalPitch(half=True,pitch_type='opta',pitch_color='grass',line_color='black')
+        fig,ax=pitch.draw(figsize=(5,10))
     
-    pitch.scatter(goals['x'],goals['y'],ax=ax,color='red',edgecolors='black',label='goal')
-    pitch.scatter(missed['x'],missed['y'],ax=ax,color='blue',edgecolors='blue',label='miss',alpha=0.2)
+        pitch.scatter(goals['x'],goals['y'],ax=ax,color='red',edgecolors='black',label='goal')
+        pitch.scatter(missed['x'],missed['y'],ax=ax,color='blue',edgecolors='blue',label='miss',alpha=0.2)
     
-    ax.legend(loc='upper right')
-    st.pyplot(fig)
+        ax.legend(loc='upper right')
+        st.pyplot(fig)
     
-    st.markdown(f"### Goal Conversion Rate")
-    st.markdown(f"- Total Shots: **{totalShots}**")
-    st.markdown(f"- Goals: **{totalGoals}**")
-    st.markdown(f"- Conversion Rate: **{converionRate:.2f}%**")
+        st.markdown(f"### Goal Conversion Rate")
+        st.markdown(f"- Total Shots: **{totalShots}**")
+        st.markdown(f"- Goals: **{totalGoals}**")
+        st.markdown(f"- Conversion Rate: **{conversionRate:.2f}%**")
+    else:
+        st.markdown(f"### {conversionRate} shots taken in this match")
     
     
 def passNetwork(passData,playerSelect):
@@ -66,7 +70,7 @@ def passNetwork(passData,playerSelect):
     
     #success pass
     pitch.scatter(successPass['x'],successPass['y'],color='red',edgecolors='black',label='Successful pass',ax=ax, s=10)
-    pitch.lines(successPass['x'],successPass['y'],successPass['end_x'],successPass['end_y'],ax=ax,color='red',lw=0.5)
+    pitch.lines(successPass['x'],successPass['y'],successPass['end_x'],successPass['end_y'],ax=ax,color='red',lw=0.5,)
     
     #unsuccess pass
     pitch.scatter(unsuccessPass['x'],unsuccessPass['y'],color='blue',edgecolors='blue',label='Unsuccessful pass',ax=ax1, s=10,alpha=0.2)
@@ -99,12 +103,22 @@ with st.sidebar:
 
     teamSelect=st.selectbox("Select Team",teams)
     
-    players=data[data['team']==teamSelect]
-    players=players['player'].unique()
+    analyseType=st.selectbox("Analysis Type",['Season','Game by Game'])
+    games=data[data['team'] == teamSelect]['game'].unique()
+    if analyseType=='Game by Game':
+        gameDate=st.selectbox("Games",games)
+    elif analyseType=='Season':
+        st.write('Showing Season Analysis')
+        
+    if analyseType=='Game by Game':
+        players=data[(data['game']==gameDate) & (data['team']==teamSelect)]['player'].unique()
+    else:
+        players=data[data['team']==teamSelect]['player'].unique()
         
     playerSelect=st.selectbox("Select Player",players)
     
     logo_path = teamsDF[teamsDF["team_name"] == teamSelect]["logo_url"].values[0]
+    
     
     st.image(logo_path)
     analyse=st.button("Analysis")
@@ -113,17 +127,26 @@ with st.sidebar:
 
 st.title('Player Analysis 24/25 Season')
 
-imgURL=getPlayerImage(playerSelect)
+# imgURL=getPlayerImage(playerSelect)
 
 if analyse:
     st.title(playerSelect)
-    if imgURL:
-        st.image(imgURL,width=250)
-    else:
-        st.write("😔 Can't display the fifa card becuase the free api can handle only 100 requests/day")
+    # if imgURL:
+    #     st.image(imgURL,width=250)
+    # else:
+    #     st.write("😔 Can't display the fifa card becuase the free api can handle only 100 requests/day")
     st.title(f"{playerSelect}'s HeatMap")
-    playerHeatMap(data,playerSelect)
+    if analyseType=='Season':
+        playerHeatMap(data,playerSelect)
+    else:
+        playerHeatMap(data[data['game']==gameDate],playerSelect)
     st.title(f"{playerSelect}'s Shots")
-    shotMap(data,playerSelect)
+    if analyseType=='Season':
+        shotMap(data,playerSelect)
+    else:
+        shotMap(data[data['game']==gameDate],playerSelect)
     st.title(f"{playerSelect}'s Pass Network")
-    passNetwork(data,playerSelect)
+    if analyseType=='Season':
+        passNetwork(data,playerSelect)
+    else:
+        passNetwork(data[data['game']==gameDate],playerSelect)
