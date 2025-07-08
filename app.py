@@ -51,7 +51,7 @@ def shotMap(shotData,playerSelect):
         st.markdown(f"- Goals: **{totalGoals}**")
         st.markdown(f"- Conversion Rate: **{conversionRate:.2f}%**")
     else:
-        st.markdown(f"### {conversionRate} shots taken in this match")
+        st.markdown(f"### {conversionRate} shots taken")
     
     
 def passNetwork(passData,playerSelect):
@@ -134,7 +134,7 @@ if analyse:
     if imgURL:
         st.image(imgURL,width=250)
     else:
-        st.write("😔 Can't display the fifa card becuase the free api can handle only 100 requests/day")
+        st.write("😔 Can't display the fifa card becuase the free api can handle only 100 requests/day. Please try again tommorow.")
     st.title(f"{playerSelect}'s HeatMap")
     if analyseType=='Season':
         playerHeatMap(data,playerSelect)
