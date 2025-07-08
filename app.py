@@ -89,7 +89,7 @@ def passNetwork(passData,playerSelect):
 
 
 teamsDF=pd.read_csv('data/PL_teams.csv')
-data=pd.read_parquet('data\ENG_match_events.parquet')
+data=pd.read_parquet('data/ENG_match_events.parquet')
 # Incomplete Data
 # shotData=pd.read_csv('data\epl_team_season_shots.csv')
 
