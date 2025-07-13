@@ -62,29 +62,34 @@ def passNetwork(passData,playerSelect):
     completePass=successPass.shape[0]
     passingAccuracy=(completePass/totalPass)*100
     
-    pitch=Pitch(pitch_type='opta',pitch_color='grass',line_color='black')
-    fig,ax=pitch.draw()
+    if totalPass:
+        pitch=Pitch(pitch_type='opta',pitch_color='grass',line_color='black')
+        fig,ax=pitch.draw()
     
-    pitch1=Pitch(pitch_type='opta',pitch_color='grass',line_color='black')
-    fig1,ax1=pitch1.draw()
+        pitch1=Pitch(pitch_type='opta',pitch_color='grass',line_color='black')
+        fig1,ax1=pitch1.draw()
     
-    #success pass
-    pitch.scatter(successPass['x'],successPass['y'],color='red',edgecolors='black',label='Successful pass',ax=ax, s=10)
-    pitch.lines(successPass['x'],successPass['y'],successPass['end_x'],successPass['end_y'],ax=ax,color='red',lw=0.5,)
+        #success pass
+        pitch.scatter(successPass['x'],successPass['y'],color='red',edgecolors='black',label='Successful pass',ax=ax, s=10)
+        pitch.lines(successPass['x'],successPass['y'],successPass['end_x'],successPass['end_y'],ax=ax,color='red',lw=0.5,)
     
-    #unsuccess pass
-    pitch.scatter(unsuccessPass['x'],unsuccessPass['y'],color='blue',edgecolors='blue',label='Unsuccessful pass',ax=ax1, s=10,alpha=0.2)
-    pitch.lines(unsuccessPass['x'],unsuccessPass['y'],unsuccessPass['end_x'],unsuccessPass['end_y'],ax=ax1,color='blue',lw=0.5)
+        #unsuccess pass
+        pitch.scatter(unsuccessPass['x'],unsuccessPass['y'],color='blue',edgecolors='blue',label='Unsuccessful pass',ax=ax1, s=10,alpha=0.2)
+        pitch.lines(unsuccessPass['x'],unsuccessPass['y'],unsuccessPass['end_x'],unsuccessPass['end_y'],ax=ax1,color='blue',lw=0.5)
     
-    ax.legend(loc='upper right')
-    st.pyplot(fig)
+        ax.legend(loc='upper right')
+        st.pyplot(fig)
     
-    ax1.legend(loc='upper right')
-    st.pyplot(fig1)
-    st.markdown(f"### Passing Accuracy")
-    st.markdown(f"- Total Passes: **{totalPass}**")
-    st.markdown(f"- Successful Passes: **{completePass}**")
-    st.markdown(f"- Accuracy: **{passingAccuracy:.2f}%**")
+        ax1.legend(loc='upper right')
+        st.pyplot(fig1)
+        st.markdown(f"### Passing Accuracy")
+        st.markdown(f"- Total Passes: **{totalPass}**")
+        st.markdown(f"- Successful Passes: **{completePass}**")
+        st.markdown(f"- Accuracy: **{passingAccuracy:.2f}%**")
+        
+    else:
+        st.markdown(f"### {completePass} shots taken")
+
 
 
 
